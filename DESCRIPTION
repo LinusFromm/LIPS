@@ -1,0 +1,10 @@
+Package: LIPS
+Title: LIPS (Linear Inverse Problem Sampler)
+Version: 0.0.0.9000
+Authors@R: 
+    person("Linus", "Fromm", , "froli465@student.otago.ac.nz", role = c("aut", "cre"))
+Description: What the package does (one paragraph).
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3

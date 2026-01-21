@@ -12,3 +12,5 @@ Imports:
     lpSolve,
     posterior,
     scales
+URL: https://github.com/LinusFromm/LIPS
+BugReports: https://github.com/LinusFromm/LIPS/issues

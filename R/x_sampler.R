@@ -1,4 +1,4 @@
-#' Regular Sampler
+#' x-sampler
 #' @param A Configuration matrix
 #' @param y Vector of observations
 #' @param B Full Markov bases to be used
@@ -11,7 +11,7 @@
 #'
 #' @return Returns a matrix of samples
 #' @export
-regular_sampler <- function(A,
+x_sampler <- function(A,
                             y,
                             B,
                             dist = "Unif",

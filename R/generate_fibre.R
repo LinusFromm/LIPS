@@ -35,7 +35,7 @@ generate_fibre <- function(A, y, epsilon = 1e-04){
   }
 
   hyperrectangle_ext_coord = setdiff(1:ncol(A), idx)
-  coords = apply(rbind(x_max, x_min)[,hyperrectangle_ext_coord], 2, function(col) return((col[2]):(col[1])))
+  coords = apply(rbind(x_max, x_min)[,hyperrectangle_ext_coord], 2, function(col) return((col[2]):(col[1])), simplify = FALSE)
 
   grid = expand.grid(coords)
   A1 = A[,idx]

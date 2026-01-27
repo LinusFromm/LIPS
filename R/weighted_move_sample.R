@@ -8,7 +8,8 @@
 #' @param n.chains Number of chains the sample is produced from
 #' @param n.burnin Number of burnin steps
 #' @param thinning Thinning parameter (store only every ith state)
-#' @param alpha Tuning parameter determining how much heavier weights count towards sampling of moves
+#' @param a Tuning parameter determining how much heavier weights count towards sampling of moves
+#' @param weights Weights for the individual moves. If NULL uses uniform weights. (Default - NULL)
 #'
 #' @return Returns a matrix of samples
 #' @export
@@ -21,15 +22,14 @@ weighted_move_sampler <- function(A,
                       n.burnin = 1e+04,
                       n.chains = 4,
                       thinning = 1,
-                      alpha = 1){
+                      a = 1,
+                      weights = NULL){
   c = ncol(A)
   r = nrow(A)
   d = c-r
   m = ncol(B)
-
-  if(dist == "Unif"){
-    cat("Calculating uniform weights...")
-    weights = uniform_weights(A, y, B)
+  if(is.null(weights)){
+    weights = rep(1, m)
   }
 
   cat("Initializing chains... \n")
@@ -45,7 +45,7 @@ weighted_move_sampler <- function(A,
                             const.rhs = y,
                             all.int = TRUE)$solution
 
-    move_indices = sample.int(m, n.burnin, replace = TRUE, prob = weights)
+    move_indices = sample.int(m, n.burnin, replace = TRUE, prob = weights^a)
     for(iii in 1:n.burnin){
       z.idx = move_indices[iii]
       z = B[,z.idx]
@@ -70,7 +70,7 @@ weighted_move_sampler <- function(A,
       }
     }
 
-    move_indices = sample.int(m, n.sample, replace = TRUE, prob = weights)
+    move_indices = sample.int(m, n.sample, replace = TRUE, prob = weights^a)
     for(iiii in 1:n.sample){
       z.idx = move_indices[iiii]
       z = B[,z.idx]

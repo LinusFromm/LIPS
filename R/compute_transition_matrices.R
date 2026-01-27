@@ -5,7 +5,9 @@
 #'
 #' @return Returns a list of matrices. Each is the transition matrix for a particular move of B. These can be used to find the overall transition matrix for the whole setup.
 #' @export
-compute_transition_matrices <- function(fibre, B, epsilon = 1e-04){
+compute_transition_matrices <- function(fibre,
+                                        B,
+                                        epsilon = 1e-04){
   H.z = list()
   for(k in 1:ncol(B)){
     b = B[,k]

@@ -4,7 +4,8 @@
 #'
 #' @return Returns the sample object of any of the samplers as a draws_df file
 #' @export
-to_draws_df <- function(x, var.names = NULL){
+to_draws_df <- function(x,
+                        var.names = NULL){
   x_df = as.data.frame(x)
 
   if(is.null(var.names)){

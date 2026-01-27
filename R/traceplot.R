@@ -4,7 +4,8 @@
 #'
 #' @return Plots a traceplot for each variable in the subset defined in variables
 #' @export
-traceplot <- function(x, variables){
+traceplot <- function(x,
+                      variables){
   n = ncol(x)
   m = nrow(x)
 

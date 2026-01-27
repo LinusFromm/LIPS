@@ -5,7 +5,9 @@
 #'
 #' @return Returns a Matrix containing all points of the fibre as columns.
 #' @export
-generate_fibre <- function(A, y, epsilon = 1e-04){
+generate_fibre <- function(A,
+                           y,
+                           epsilon = 1e-04){
   x_max = c()
   x_min = c()
 

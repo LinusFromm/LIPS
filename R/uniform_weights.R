@@ -5,7 +5,9 @@
 #'
 #' @return Returns a vector of weights used for the weighted_move_sampler
 #' @export
-uniform_weights <- function(A, y, B){
+uniform_weights <- function(A,
+                            y,
+                            B){
   c = ncol(A)
   r = nrow(A)
   m = ncol(B)

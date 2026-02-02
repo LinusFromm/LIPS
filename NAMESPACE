@@ -3,6 +3,7 @@
 export(compute_transition_matrices)
 export(dynamic_sampler)
 export(generate_fibre)
+export(generate_fibre_extension)
 export(is_wholenumber)
 export(to_draws_df)
 export(traceplot)

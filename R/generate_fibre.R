@@ -32,8 +32,8 @@ generate_fibre <- function(A,
     temp = A[,c(idx,i)]
     if(qr(temp)$rank > qr(A[,idx])$rank){
       idx = c(idx, i)
-      i = i+1
     }
+    i = i+1
   }
 
   hyperrectangle_ext_coord = setdiff(1:ncol(A), idx)

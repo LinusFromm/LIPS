@@ -20,6 +20,6 @@ uniform_weights <- function(A,
     x.max[i] = lpSolve::lp(direction = "max", objective.in = diag(c)[i,], const.mat = A, const.dir = "=", const.rhs = y, all.int = TRUE)$solution[i]
   }
 
-  weights = apply(floor((x.max-x.min)/abs(B)), 2, function(col) mean(col[col < Inf]))
+  weights = apply(floor((x.max-x.min)/abs(B)), 2, function(col) mean(col[col < Inf], na.rm = TRUE))
   return(weights)
 }

@@ -7,6 +7,7 @@
 hypercube_sampler(
   A,
   y,
+  dist = "unif",
   n.samples = 1e+05,
   n.chains = 4,
   n.burnin = 10000,
@@ -23,6 +24,8 @@ hypercube_sampler(
 \item{A}{Configuration matrix}
 
 \item{y}{Observation vector}
+
+\item{dist}{Model distribution}
 
 \item{n.samples}{Number of samples per chain}
 

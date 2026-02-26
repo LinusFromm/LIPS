@@ -23,7 +23,7 @@ calculateAlpha <- function(x, x.star, ldelta, w = 0, dist = "Unif"){
     } else {
       alpha = 0
     }
-  } else if(dist == "NegBin"){
+  } else if(dist == "no3way"){
     if(isOutside(x) && isOutside(x.star)){
       alpha = min(0, w * (sum(abs(x[which(x < 0)]))-sum(abs(x.star[which(x.star < 0)]))))
     } else if(!isOutside(x) && isOutside(x.star)){

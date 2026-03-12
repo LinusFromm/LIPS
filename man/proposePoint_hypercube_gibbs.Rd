@@ -4,7 +4,7 @@
 \alias{proposePoint_hypercube_gibbs}
 \title{Propose a new point in the hypercube extension (Gibbs)}
 \usage{
-proposePoint_hypercube_gibbs(x, B, ldelta, w, CPLB_idx, a)
+proposePoint_hypercube_gibbs(x, B, ldelta, w, CPLB_idx, a, dist)
 }
 \arguments{
 \item{x}{Current point}
@@ -18,6 +18,8 @@ proposePoint_hypercube_gibbs(x, B, ldelta, w, CPLB_idx, a)
 \item{CPLB_idx}{Index of the A_2 matrix}
 
 \item{a}{Bounds of the hypercuboid}
+
+\item{dist}{Proposed model}
 }
 \value{
 Returns a new proposed point in the hypercube extension

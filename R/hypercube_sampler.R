@@ -35,7 +35,7 @@ hypercube_sampler <- function(A, y, dist = "unif", n.samples = 1e5, n.chains = 4
   if(length(a) == 1){
     a = rep(a, r)
   } else if(length(a) != r-n){
-    stop("p has to have dimension r-n!")
+    stop("a has to have dimension r-n!")
   }
 
   if(is.null(x.start)){
@@ -60,11 +60,11 @@ hypercube_sampler <- function(A, y, dist = "unif", n.samples = 1e5, n.chains = 4
         alpha = calculateAlpha(x, x.star, ldelta, w, dist)
 
         u = stats::runif(1,0,1)
-        if(u < alpha){
+        if(u < exp(alpha)){
           x = x.star
         }
       } else if (method == "Gibbs") {
-        x = proposePoint_hypercube_gibbs(x, B, ldelta, w, CPLB_idx, a)
+        x = proposePoint_hypercube_gibbs(x, B, ldelta, w, CPLB_idx, a, dist)
       }
     }
 
@@ -77,11 +77,11 @@ hypercube_sampler <- function(A, y, dist = "unif", n.samples = 1e5, n.chains = 4
         alpha = calculateAlpha(x, x.star, ldelta, w, dist)
 
         u = stats::runif(1,0,1)
-        if(u < alpha){
+        if(u < exp(alpha)){
           x = x.star
         }
       } else if(method == "Gibbs"){
-        x = proposePoint_hypercube_gibbs(x, B, ldelta, w, CPLB_idx, a)
+        x = proposePoint_hypercube_gibbs(x, B, ldelta, w, CPLB_idx, a, dist)
       }
       sample[(i-1)*n.samples+j, 1:length(x)] = x
       sample[(i-1)*n.samples+j, length(x)+1:3] = c(i, j, (i-1)*n.samples+j)

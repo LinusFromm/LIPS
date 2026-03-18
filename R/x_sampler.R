@@ -4,6 +4,7 @@
 #' @param B Full Markov bases to be used
 #' @param dist Unconditional distribution on x
 #' @param rate Poisson rates for each x_i
+#' @param proposal Which proposal for moves? "Random" or "NonRandom", first will use the uniform distribution the latter a systematic approach.
 #' @param n.sample Number of samples that are produced
 #' @param n.chains Number of chains the sample is produced from
 #' @param n.burnin Number of burnin steps
@@ -12,14 +13,15 @@
 #' @return Returns a matrix of samples
 #' @export
 x_sampler <- function(A,
-                            y,
-                            B,
-                            dist = "Unif",
-                            rate = NULL,
-                            n.sample = 1e+05,
-                            n.burnin = 1e+04,
-                            n.chains = 4,
-                            thinning = 1){
+                      y,
+                      B,
+                      dist = "Unif",
+                      rate = NULL,
+                      proposal = "Random",
+                      n.sample = 1e+05,
+                      n.burnin = 1e+04,
+                      n.chains = 4,
+                      thinning = 1){
   c = ncol(A)
   r = nrow(A)
   d = c-r
@@ -36,7 +38,12 @@ x_sampler <- function(A,
                             const.rhs = y,
                             all.int = TRUE)$solution
 
-    move_indices = sample.int(m, n.burnin, replace = TRUE)
+    move_indices = c()
+    if(proposal == "Random"){
+      move_indices = sample.int(m, n.burnin, replace = TRUE)
+    } else if (proposal == "NonRandom"){
+      move_indices = c(rep(1:m, floor(n.burnin/m)), 1:(n.burnin%%m))
+    }
     for(iii in 1:n.burnin){
       z.idx = move_indices[iii]
       z = B[,z.idx]
@@ -61,7 +68,12 @@ x_sampler <- function(A,
       }
     }
 
-    move_indices = sample.int(m, n.sample, replace = TRUE)
+    move_indices = c()
+    if(proposal == "Random"){
+      move_indices = sample.int(m, n.sample, replace = TRUE)
+    } else if (proposal == "NonRandom"){
+      move_indices = c(rep(1:m, floor(n.sample)/m), 1:(n.sample%%m))
+    }
     for(iiii in 1:n.sample){
       z.idx = move_indices[iiii]
       z = B[,z.idx]

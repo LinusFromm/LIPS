@@ -10,6 +10,7 @@ x_sampler(
   B,
   dist = "Unif",
   rate = NULL,
+  proposal = "Random",
   n.sample = 1e+05,
   n.burnin = 10000,
   n.chains = 4,
@@ -26,6 +27,8 @@ x_sampler(
 \item{dist}{Unconditional distribution on x}
 
 \item{rate}{Poisson rates for each x_i}
+
+\item{proposal}{Which proposal for moves? "Random" or "NonRandom", first will use the uniform distribution the latter a systematic approach.}
 
 \item{n.sample}{Number of samples that are produced}
 

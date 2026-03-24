@@ -13,6 +13,7 @@
 #' @param n.chains Number of chains
 #' @param thinning Thinning parameter
 #'
+#' @export
 pSampler <- function(A,
                      y,
                      B,
@@ -37,7 +38,6 @@ pSampler <- function(A,
     stop("thinning paramter must divide n.sample parameter!")
   }
 
-  cat("Initializing chains... \n")
   x = matrix(NA, ncol = c+3, nrow = n.chains*n.sample/thinning)
   x[, c+3] = 1:(n.chains*n.sample/thinning)
   x[, c+2] = rep(1:(n.sample/thinning), n.chains)
@@ -83,7 +83,6 @@ pSampler <- function(A,
         x[(iii-1)*(n.sample/thinning) + iiiii/thinning, 1:c] = x.current
       }
     }
-    cat("Chain ", iii, " completed.\n")
   }
   return(x)
 }

@@ -1,6 +1,6 @@
 Package: LIPS
 Title: LIPS (Linear Inverse Problem Sampler)
-Version: 0.6.1
+Version: 0.7.0
 Authors@R: 
     person("Linus", "Fromm", , "froli465@student.otago.ac.nz", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
@@ -10,6 +10,8 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 Imports: 
     extraDistr,
+    future,
+    future.apply,
     lpSolve,
     numbers,
     posterior,

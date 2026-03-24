@@ -16,7 +16,6 @@
 #' @param n.burnin Number of burnin steps
 #' @param n.chains Number of chains
 #' @param thinning Thinning parameter
-#'
 #' @export
 extensionSampler <- function(A,
                             y,
@@ -36,12 +35,59 @@ extensionSampler <- function(A,
                             n.chains = 4,
                             thinning = 1){
 
+  future::plan(future::multisession, workers = min(n.chains, future::availableCores()))
+
   if(extension == "p"){
-    x = pSampler(A, y, B, Model, lambda, p, ldelta, w, x.start, n.sample, n.burnin, n.chains, thinning)
+
+    x = future.apply::future_lapply(1:n.chains, function(chain_id) {
+          pSampler(
+          A = A,
+          y = y,
+          B = B,
+          Model = Model,
+          lambda = lambda,
+          p = p,
+          ldelta = ldelta,
+          w = w,
+          n.sample = n.sample,
+          n.burnin = n.burnin,
+          n.chains = 1
+        )
+      }, future.seed = TRUE, future.packages = "LIPS")
   } else if(extension == "hyperrectangle"){
-    x = hyperrectangleSampler(A, y, B, Model, lambda, CPLBIdx, a, ldelta, w, x.start, n.sample, n.burnin, n.chains, thinning)
+    x = future.apply::future_lapply(1:n.chains, function(chain_id) {
+      hyperrectangleSampler(A = A,
+                            y = y,
+                            B = B,
+                            Model = Model,
+                            lambda = lambda,
+                            CPLBIdx = CPLBIdx,
+                            a = a,
+                            ldelta = ldelta,
+                            w = w,
+                            x.start = x.start,
+                            n.sample = n.sample,
+                            n.burnin = n.burnin,
+                            n.chains = 1,
+                            thinning = thinning)
+    }, future.seed = TRUE, future.packages = "LIPS")
   } else if(extension == "knapsack"){
-    x = knapsackSampler(A, y, B, Model, lambda, CPLBIdx, a, ldelta, w, x.start, n.sample, n.burnin, n.chains, thinning)
+    x = future.apply::future_lapply(1:n.chains, function(chain_id) {
+      knapsackSampler(A = A,
+                      y = y,
+                      B = B,
+                      Model = Model,
+                      lambda = lambda,
+                      CPLBIdx = CPLBIdx,
+                      a = a,
+                      ldelta = ldelta,
+                      w = w,
+                      x.start = x.start,
+                      n.sample = n.sample,
+                      n.burnin = n.burnin,
+                      n.chains = 1,
+                      thinning = thinning)
+    }, future.seed = TRUE, future.packages = "LIPS")
   }
   return(x)
 }

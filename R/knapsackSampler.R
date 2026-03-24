@@ -15,6 +15,7 @@
 #' @param n.chains Number of chains
 #' @param thinning Thinning parameter
 #'
+#' @export
 knapsackSampler <- function(A,
                             y,
                             B = NULL,
@@ -64,7 +65,6 @@ knapsackSampler <- function(A,
     stop("a has to have dimension c-r!")
   }
 
-  cat("Initializing chains... \n")
   x = matrix(NA, ncol = c+3, nrow = n.chains*n.sample/thinning)
   x[, c+3] = 1:(n.chains*n.sample/thinning)
   x[, c+2] = rep(1:(n.sample/thinning), n.chains)
@@ -110,7 +110,6 @@ knapsackSampler <- function(A,
         x[(iii-1)*(n.sample/thinning) + iiiii/thinning, 1:c] = x.current
       }
     }
-    cat("Chain ", iii, " completed.\n")
   }
   return(x)
 }

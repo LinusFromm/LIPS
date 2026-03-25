@@ -11,7 +11,7 @@
 #' @param x.start Starting points for each chain. Needs to be fed in as a matrix with number of rows = number of chains
 #' @param n.sample Number of samples
 #' @param n.burnin Number of burnin steps
-#' @param n.chains Number of chains
+#' @param chain.id Which number chain?
 #' @param thinning Thinning parameter
 #'
 #' @export
@@ -27,7 +27,7 @@ hyperrectangleSampler <- function(A,
                                   x.start = NULL,
                                   n.sample = 1e+05,
                                   n.burnin = 1e+04,
-                                  n.chains = 4,
+                                  chain.id = 4,
                                   thinning = 1){
   r = nrow(A)
   c = ncol(A)
@@ -63,50 +63,45 @@ hyperrectangleSampler <- function(A,
     stop("a has to have dimension c-r!")
   }
 
-  x = matrix(NA, ncol = c+3, nrow = n.chains*n.sample/thinning)
-  x[, c+3] = 1:(n.chains*n.sample/thinning)
-  x[, c+2] = rep(1:(n.sample/thinning), n.chains)
-  x[, c+1] = rep(1:n.chains, each = n.sample/thinning)
+  x = matrix(NA, ncol = c+3, nrow = n.sample/thinning)
+  x[, c+3] = (chain.id-1)*n.sample + 1:(n.sample/thinning)
+  x[, c+2] = 1:(n.sample/thinning)
+  x[, c+1] = rep(chain.id, n.sample/thinning)
 
   if(is.null(x.start)){
-    x.start = matrix(NA, nrow = n.chains, ncol = c)
-    for(i in 1:n.chains){
-      x.start[i,] = lpSolve::lp(direction = "min",
-                                objective.in = sample(0:1, c, replace = TRUE),
-                                const.mat = A,
-                                const.rhs = y,
-                                const.dir = "=",
-                                all.int = TRUE)$solution
+    x.start = lpSolve::lp(direction = "min",
+                          objective.in = sample(0:1, c, replace = TRUE),
+                          const.mat = A,
+                          const.rhs = y,
+                          const.dir = "=",
+                          all.int = TRUE)$solution
+  }
+
+  x.current = x.start
+
+  moveIndices = sample(1:ncol(B), n.burnin, replace = TRUE)
+  for(iiii in 1:n.burnin){
+    moveIdx = moveIndices[iiii]
+    x.proposal = proposePoint(x.current, moveIdx, B, extension = "hyperrectangle", CPLBIdx = CPLBIdx, a = a)
+    alpha = acceptanceExt(x.current, x.proposal, ldelta, w, Model, lambda)
+
+    if(stats::runif(1) < exp(alpha)){
+      x.current = x.proposal
     }
   }
 
-  for(iii in 1:n.chains){
-    x.current = x.start[iii,]
+  moveIndices = sample(1:ncol(B), n.sample, replace = TRUE)
+  for(iiiii in 1:n.sample){
+    moveIdx = moveIndices[iiiii]
+    x.proposal = proposePoint(x.current, moveIdx, B, extension = "hyperrectangle", CPLBIdx = CPLBIdx, a = a)
+    alpha = acceptanceExt(x.current, x.proposal, ldelta, w, Model, lambda)
 
-    moveIndices = sample(1:ncol(B), n.burnin, replace = TRUE)
-    for(iiii in 1:n.burnin){
-      moveIdx = moveIndices[iiii]
-      x.proposal = proposePoint(x.current, moveIdx, B, extension = "hyperrectangle", CPLBIdx = CPLBIdx, a = a)
-      alpha = acceptanceExt(x.current, x.proposal, ldelta, w, Model, lambda)
-
-      if(stats::runif(1) < exp(alpha)){
-        x.current = x.proposal
-      }
+    if(stats::runif(1) < exp(alpha)){
+      x.current = x.proposal
     }
 
-    moveIndices = sample(1:ncol(B), n.sample, replace = TRUE)
-    for(iiiii in 1:n.sample){
-      moveIdx = moveIndices[iiiii]
-      x.proposal = proposePoint(x.current, moveIdx, B, extension = "hyperrectangle", CPLBIdx = CPLBIdx, a = a)
-      alpha = acceptanceExt(x.current, x.proposal, ldelta, w, Model, lambda)
-
-      if(stats::runif(1) < exp(alpha)){
-        x.current = x.proposal
-      }
-
-      if(iiiii%%thinning == 0){
-        x[(iii-1)*(n.sample/thinning) + iiiii/thinning, 1:c] = x.current
-      }
+    if(iiiii%%thinning == 0){
+      x[iiiii/thinning, 1:c] = x.current
     }
   }
   return(x)

@@ -16,7 +16,7 @@ pSampler(
   x.start = NULL,
   n.sample = 1e+05,
   n.burnin = 10000,
-  n.chains = 4,
+  chain.id = 1,
   thinning = 1
 )
 }
@@ -43,7 +43,7 @@ pSampler(
 
 \item{n.burnin}{Number of burnin steps}
 
-\item{n.chains}{Number of chains}
+\item{chain.id}{Which number chain?}
 
 \item{thinning}{Thinning parameter}
 }

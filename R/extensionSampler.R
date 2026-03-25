@@ -51,7 +51,8 @@ extensionSampler <- function(A,
           w = w,
           n.sample = n.sample,
           n.burnin = n.burnin,
-          n.chains = 1
+          chain.id = chain_id,
+          thinning = thinning
         )
       }, future.seed = TRUE, future.packages = "LIPS")
   } else if(extension == "hyperrectangle"){
@@ -68,7 +69,7 @@ extensionSampler <- function(A,
                             x.start = x.start,
                             n.sample = n.sample,
                             n.burnin = n.burnin,
-                            n.chains = 1,
+                            chain.id = chain_id,
                             thinning = thinning)
     }, future.seed = TRUE, future.packages = "LIPS")
   } else if(extension == "knapsack"){
@@ -85,7 +86,7 @@ extensionSampler <- function(A,
                       x.start = x.start,
                       n.sample = n.sample,
                       n.burnin = n.burnin,
-                      n.chains = 1,
+                      chain.id = chain_id,
                       thinning = thinning)
     }, future.seed = TRUE, future.packages = "LIPS")
   }

@@ -12,11 +12,11 @@ to_draws_df <- function(x,
   if(matrix){
     x_df = as.data.frame(x)
   } else {
-    x_df = do.call(rbind, x)
+    x_df = as.data.frame(do.call(rbind, x))
   }
 
   if(is.null(var.names)){
-    colnames(x_df) <- c(paste0("x",1:(ncol(x)-3)), ".chain", ".iteration", ".draw")
+    colnames(x_df) <- c(paste0("x",1:(ncol(x_df)-3)), ".chain", ".iteration", ".draw")
   } else {
     colnames(x_df) <- c(var.names, ".chain", ".iteration", ".draw")
   }

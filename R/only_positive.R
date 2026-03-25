@@ -5,5 +5,5 @@
 only_positive <- function(x){
   lapply(x, function(mat) t(apply(X = mat,
                                       MARGIN = 1,
-                                      FUN = function(row) if(any(row[1:72] == -1)){c(rep(NA, 72), row[73:75])} else {row})))
+                                      FUN = function(row) if(any(row[1:72] <= -1)){c(rep(NA, 72), row[73:75])} else {row})))
 }

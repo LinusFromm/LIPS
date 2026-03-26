@@ -4,6 +4,6 @@
 #' @export
 only_positive <- function(x){
   lapply(x, function(mat) t(apply(X = mat,
-                                      MARGIN = 1,
-                                      FUN = function(row) if(any(row[1:72] <= -1)){c(rep(NA, 72), row[73:75])} else {row})))
+                                  MARGIN = 1,
+                                  FUN = function(row) if(any(row[1:(length(row)-3)] <= -1)){c(rep(NA, length(row) - 3), row[(length(row)-2):length(row)])} else {row})))
 }

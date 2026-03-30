@@ -15,11 +15,11 @@ acceptanceExt <- function(x.current, x.proposal, ldelta, w, Model, lambda = NULL
 
   if(Model == "uniform"){
     if(isOutside(x.current) && isOutside(x.proposal)){
-      alpha = min(0, w * (sum(abs(x.proposal[which(x.proposal < 0)]))-sum(abs(x.current[which(x.current < 0)]))))
+      alpha = min(0, - w * (sum(abs(x.proposal[which(x.proposal < 0)]))-sum(abs(x.current[which(x.current < 0)]))))
     } else if(!isOutside(x.current) && isOutside(x.proposal)){
-      alpha = min(0, ldelta + w*sum(abs(x.proposal[which(x.proposal < 0)])))
+      alpha = min(0, ldelta - w*sum(abs(x.proposal[which(x.proposal < 0)])))
     } else if(isOutside(x.current) && !isOutside(x.proposal)){
-      alpha = min(0, -w*sum(abs(x.current[which(x.current < 0)]))-ldelta)
+      alpha = min(0, w*sum(abs(x.current[which(x.current < 0)]))-ldelta)
     } else {
       alpha = 0
     }

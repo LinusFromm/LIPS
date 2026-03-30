@@ -25,22 +25,22 @@ acceptanceExt <- function(x.current, x.proposal, ldelta, w, Model, lambda = NULL
     }
   } else if(Model == "poisson"){
     if(isOutside(x.current) && isOutside(x.proposal)){
-      p.current = w*sum(abs(x.current[which(x.current < 0)])) + sum(stats::dpois(x.current[which(x.current >= 0)],
+      p.current = -w*sum(abs(x.current[which(x.current < 0)])) + sum(stats::dpois(x.current[which(x.current >= 0)],
                                                                                  lambda = lambda[which(x.current >= 0)],
                                                                                  log = TRUE))
-      p.proposal = w*sum(abs(x.proposal[which(x.proposal < 0)])) + sum(stats::dpois(x.proposal[which(x.proposal >= 0)],
+      p.proposal = -w*sum(abs(x.proposal[which(x.proposal < 0)])) + sum(stats::dpois(x.proposal[which(x.proposal >= 0)],
                                                                                         lambda = lambda[which(x.proposal >= 0)],
                                                                                         log = TRUE))
       alpha = min(0, p.proposal - p.current)
     } else if(!isOutside(x.current) && isOutside(x.proposal)){
       p.current = sum(stats::dpois(x.current, lambda = lambda, log = TRUE))
-      p.proposal =  w*sum(abs(x.proposal[which(x.proposal < 0)])) + sum(stats::dpois(x.proposal[which(x.proposal >= 0)],
+      p.proposal =  -w*sum(abs(x.proposal[which(x.proposal < 0)])) + sum(stats::dpois(x.proposal[which(x.proposal >= 0)],
                                                                                      lambda = lambda[which(x.proposal >= 0)],
                                                                                      log = TRUE))
 
       alpha = min(0, ldelta + p.proposal - p.current)
     } else if(isOutside(x.current) && !isOutside(x.proposal)){
-      p.current = w * sum(abs(x.current[which(x.current < 0)])) + sum(stats::dpois(x.current[which(x.current >= 0)],
+      p.current = -w * sum(abs(x.current[which(x.current < 0)])) + sum(stats::dpois(x.current[which(x.current >= 0)],
                                                                                    lambda = lambda[which(x.current >= 0)],
                                                                                    log = TRUE))
       p.proposal = sum(stats::dpois(x.proposal, lambda = lambda, log = TRUE))

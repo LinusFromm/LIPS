@@ -58,7 +58,7 @@ pSampler <- function(A,
   for(iiii in 1:n.burnin){
     moveIdx = moveIndices[iiii]
     x.proposal = proposePoint(x.current, moveIdx, B, extension = "p", p)
-    alpha = acceptanceExt(x.current, x.proposal, ldelta, w, Model, lambda)
+    alpha = acceptanceExt(x.current, x.proposal, ldelta, w, Model, lambda)$alpha
 
     if(stats::runif(1) < exp(alpha)){
       x.current = x.proposal
@@ -69,7 +69,8 @@ pSampler <- function(A,
   for(iiiii in 1:n.sample){
     moveIdx = moveIndices[iiiii]
     x.proposal = proposePoint(x.current, moveIdx, B, extension = "p", p)
-    alpha = acceptanceExt(x.current, x.proposal, ldelta, w, Model, lambda)
+    alpha = acceptanceExt(x.current, x.proposal, ldelta, w, Model, lambda)$alpha
+    state[iiiii] = acceptanceExt(x.current, x.proposal, ldelta, w, Model, lambda)$state
 
     if(stats::runif(1) < exp(alpha)){
       x.current = x.proposal
@@ -79,5 +80,5 @@ pSampler <- function(A,
       x[iiiii/thinning, 1:c] = x.current
     }
   }
-  return(x)
+  return(x = x)
 }

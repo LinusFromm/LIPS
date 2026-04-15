@@ -1,25 +1,25 @@
 #' Computes a column partition lattice basis
 #' @param A Configuration matrix
-#' @param CPLB_idx Index of columns of A_2
+#' @param A2Idx Index of columns of A2
 #'
 #' @return Returns a column partition lattice basis as matrix
 #' @export
-computeCPLB <- function(A, CPLB_idx){
-  CPLB_idx <- as.integer(CPLB_idx)
+computeCPLB <- function(A, A2Idx){
+  A2Idx <- as.integer(A2Idx)
 
-  A_1 = A[,-CPLB_idx]
-  A_2 = A[,CPLB_idx]
+  A1 = A[,-A2Idx]
+  A2 = A[,A2Idx]
 
-  if(abs(det(A_1)) != 1){
-    stop("Column partition lattice basis can only be calculated for unimodular matrix A_1")
+  if(abs(det(A1)) != 1){
+    stop("Column partition lattice basis can only be calculated for unimodular matrix A1")
   }
 
-  LB_1 = rbind(-solve(A_1)%*%A_2)
-  LB_2 = diag(length(CPLB_idx))
+  LB1 = rbind(-solve(A1)%*%A2)
+  LB2 = diag(length(A2Idx))
 
-  LB = matrix(0, nrow = ncol(A), ncol = length(CPLB_idx))
-  LB[CPLB_idx,] = LB_2
-  LB[-CPLB_idx,] = LB_1
+  LB = matrix(0, nrow = ncol(A), ncol = length(A2Idx))
+  LB[A2Idx,] = LB2
+  LB[-A2Idx,] = LB1
 
   return(round(LB))
 }

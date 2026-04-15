@@ -10,7 +10,7 @@ proposePoint(
   B,
   extension = "p",
   p = 0,
-  CPLBIdx = NULL,
+  A2Idx = NULL,
   a = NULL,
   b = NULL
 )
@@ -26,7 +26,7 @@ proposePoint(
 
 \item{p}{Relaxation limit}
 
-\item{CPLBIdx}{Free variables correponding to matrix A_2}
+\item{A2Idx}{Free variables correponding to matrix A_2}
 
 \item{a}{"hyperrectangle" extension: bounds on hyperrectangle, "knapsack": objective function}
 

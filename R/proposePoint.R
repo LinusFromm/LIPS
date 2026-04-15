@@ -4,11 +4,11 @@
 #' @param B Collection of moves (p-MB, CPLB or FMB)
 #' @param extension Type of extension
 #' @param p Relaxation limit
-#' @param CPLBIdx Free variables correponding to matrix A_2
+#' @param A2Idx Free variables correponding to matrix A_2
 #' @param a "hyperrectangle" extension: bounds on hyperrectangle, "knapsack": objective function
 #' @param b Upper bound of objective function for knapsack extension
 #'
-proposePoint <- function(x.current, moveIdx, B, extension = "p", p = 0, CPLBIdx = NULL, a = NULL, b = NULL){
+proposePoint <- function(x.current, moveIdx, B, extension = "p", p = 0, A2Idx = NULL, a = NULL, b = NULL){
   z = B[, moveIdx]
 
   if(extension == "p"){
@@ -21,13 +21,13 @@ proposePoint <- function(x.current, moveIdx, B, extension = "p", p = 0, CPLBIdx 
 
   } else if(extension == "hyperrectangle"){
 
-    xmin = x.current - x.current[CPLBIdx[moveIdx]]*z
+    xmin = x.current - x.current[A2Idx[moveIdx]]*z
     c = sample(0:a[moveIdx], 1, replace = TRUE)
 
   } else if(extension == "knapsack"){
 
-    xmin = x.current - x.current[CPLBIdx[moveIdx]]*z
-    cmax = floor((b-(sum(x.current[CPLBIdx]*a) - x.current[CPLBIdx[moveIdx]]*a[moveIdx]))/a[moveIdx])
+    xmin = x.current - x.current[A2Idx[moveIdx]]*z
+    cmax = floor((b-sum(xmin[A2Idx]*a))/a[moveIdx])
     c = sample(0:cmax, 1, replace = TRUE)
 
   }

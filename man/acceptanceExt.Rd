@@ -4,14 +4,14 @@
 \alias{acceptanceExt}
 \title{Calculate acceptance probability}
 \usage{
-acceptanceExt(x.current, x.proposal, ldelta, w, Model, lambda = NULL)
+acceptanceExt(xCurrent, xProposal, loggamma, w, Model, lambda = NULL)
 }
 \arguments{
-\item{x.current}{Current state of MCMC}
+\item{xCurrent}{Current state of MCMC}
 
-\item{x.proposal}{Proposed new state of the MCMC}
+\item{xProposal}{Proposed new state of the MCMC}
 
-\item{ldelta}{Combined normalizing constant and delta}
+\item{loggamma}{Combined normalizing constant and delta}
 
 \item{w}{Weight put on "outsideness"}
 

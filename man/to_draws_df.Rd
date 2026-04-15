@@ -4,12 +4,12 @@
 \alias{to_draws_df}
 \title{Converting from matrix to draws_df}
 \usage{
-to_draws_df(x, var.names = NULL, matrix = TRUE)
+to_draws_df(x, varNames = NULL, matrix = TRUE)
 }
 \arguments{
 \item{x}{Matrix containing the sample including chain, iteration and draw numbers.}
 
-\item{var.names}{Fill names for the variables if NULL names will be $xi$ for the ith variable.}
+\item{varNames}{Fill names for the variables if NULL names will be $xi$ for the ith variable.}
 
 \item{matrix}{Is the sample a matrix?}
 }

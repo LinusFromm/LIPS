@@ -11,12 +11,12 @@ pSampler(
   Model = "uniform",
   lambda = NULL,
   p = 0,
-  ldelta = 0,
+  loggamma = 0,
   w = 0,
-  x.start = NULL,
-  n.sample = 1e+05,
-  n.burnin = 10000,
-  chain.id = 1,
+  xStart = NULL,
+  nSample = 1e+05,
+  nBurnin = 10000,
+  chainID = 1,
   thinning = 1
 )
 }
@@ -33,17 +33,17 @@ pSampler(
 
 \item{p}{Relaxation limit}
 
-\item{ldelta}{Combined normalizing constant and delta}
+\item{loggamma}{Combined normalizing constant and delta}
 
 \item{w}{Weight put on "outsideness"}
 
-\item{x.start}{Starting points for each chain. Needs to be fed in as a matrix with number of rows = number of chains}
+\item{xStart}{Starting points for each chain. Needs to be fed in as a matrix with number of rows = number of chains}
 
-\item{n.sample}{Number of samples}
+\item{nSample}{Number of samples}
 
-\item{n.burnin}{Number of burnin steps}
+\item{nBurnin}{Number of burnin steps}
 
-\item{chain.id}{Which number chain?}
+\item{chainID}{Which number chain?}
 
 \item{thinning}{Thinning parameter}
 }

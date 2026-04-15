@@ -4,14 +4,14 @@
 \alias{calculateAlpha}
 \title{Calculate Acceptance ratio}
 \usage{
-calculateAlpha(x, x.star, ldelta, w = 0, dist = "Unif")
+calculateAlpha(xCurrent, xProposal, loggamma, w = 0, dist = "Unif")
 }
 \arguments{
-\item{x}{Current point}
+\item{xCurrent}{Current point}
 
-\item{x.star}{Proposed point}
+\item{xProposal}{Proposed point}
 
-\item{ldelta}{log(delta) used to define epsilon}
+\item{loggamma}{log(delta) used to define epsilon}
 
 \item{w}{Weight of negativity}
 

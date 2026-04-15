@@ -6,15 +6,15 @@
 #' @param lambda Rate parameters for "poisson" Model
 #' @param extension Type of extension ("p", "hyperrectangle", "knapsack")
 #' @param p Relaxation limit
-#' @param CPLBIdx Free variables correponding to matrix A_2
+#' @param A2Idx Free variables correponding to matrix A_2
 #' @param a "hyperrectangle" extension: bounds on hyperrectangle, "knapsack": objective function
 #' @param b Upper bound of objective function for knapsack extension
-#' @param ldelta Combined normalizing constant and delta
+#' @param loggamma Combined normalizing constant and delta
 #' @param w Weight put on "outsideness"
-#' @param x.start Starting points for each chain. Needs to be fed in as a matrix with number of rows = number of chains
-#' @param n.sample Number of samples
-#' @param n.burnin Number of burnin steps
-#' @param n.chains Number of chains
+#' @param xStart Starting points for each chain. Needs to be fed in as a matrix with number of rows = number of chains
+#' @param nSample Number of samples
+#' @param nBurnin Number of burnin steps
+#' @param nChains Number of chains
 #' @param thinning Thinning parameter
 #' @export
 extensionSampler <- function(A,
@@ -24,22 +24,22 @@ extensionSampler <- function(A,
                             lambda = NULL,
                             extension = "p",
                             p = 0,
-                            CPLBIdx = NULL,
+                            A2Idx = NULL,
                             a = NULL,
                             b = 0,
-                            ldelta = 0,
+                            loggamma = 0,
                             w = 0,
-                            x.start = NULL,
-                            n.sample = 1e+05,
-                            n.burnin = 1e+04,
-                            n.chains = 4,
+                            xStart = NULL,
+                            nSample = 1e+05,
+                            nBurnin = 1e+04,
+                            nChains = 4,
                             thinning = 1){
 
-  future::plan(future::multisession, workers = min(n.chains, future::availableCores()))
+  future::plan(future::multisession, workers = min(nChains, future::availableCores()))
 
   if(extension == "p"){
 
-    x = future.apply::future_lapply(1:n.chains, function(chain_id) {
+    x = future.apply::future_lapply(1:nChains, function(chainID) {
           pSampler(
           A = A,
           y = y,
@@ -47,46 +47,47 @@ extensionSampler <- function(A,
           Model = Model,
           lambda = lambda,
           p = p,
-          ldelta = ldelta,
+          loggamma = loggamma,
           w = w,
-          n.sample = n.sample,
-          n.burnin = n.burnin,
-          chain.id = chain_id,
+          nSample = nSample,
+          nBurnin = nBurnin,
+          chainID = chainID,
           thinning = thinning
         )
       }, future.seed = TRUE, future.packages = "LIPS")
   } else if(extension == "hyperrectangle"){
-    x = future.apply::future_lapply(1:n.chains, function(chain_id) {
+    x = future.apply::future_lapply(1:nChains, function(chainID) {
       hyperrectangleSampler(A = A,
                             y = y,
                             B = B,
                             Model = Model,
                             lambda = lambda,
-                            CPLBIdx = CPLBIdx,
+                            A2Idx = A2Idx,
                             a = a,
-                            ldelta = ldelta,
+                            loggamma = loggamma,
                             w = w,
-                            x.start = x.start,
-                            n.sample = n.sample,
-                            n.burnin = n.burnin,
-                            chain.id = chain_id,
+                            xStart = xStart,
+                            nSample = nSample,
+                            nBurnin = nBurnin,
+                            chainID = chainID,
                             thinning = thinning)
     }, future.seed = TRUE, future.packages = "LIPS")
   } else if(extension == "knapsack"){
-    x = future.apply::future_lapply(1:n.chains, function(chain_id) {
+    x = future.apply::future_lapply(1:nChains, function(chainID) {
       knapsackSampler(A = A,
                       y = y,
                       B = B,
                       Model = Model,
                       lambda = lambda,
-                      CPLBIdx = CPLBIdx,
+                      A2Idx = A2Idx,
                       a = a,
-                      ldelta = ldelta,
+                      b = b,
+                      loggamma = loggamma,
                       w = w,
-                      x.start = x.start,
-                      n.sample = n.sample,
-                      n.burnin = n.burnin,
-                      chain.id = chain_id,
+                      xStart = xStart,
+                      nSample = nSample,
+                      nBurnin = nBurnin,
+                      chainID = chainID,
                       thinning = thinning)
     }, future.seed = TRUE, future.packages = "LIPS")
   }

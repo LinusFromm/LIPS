@@ -4,12 +4,12 @@
 \alias{computeCPLB}
 \title{Computes a column partition lattice basis}
 \usage{
-computeCPLB(A, CPLB_idx)
+computeCPLB(A, A2Idx)
 }
 \arguments{
 \item{A}{Configuration matrix}
 
-\item{CPLB_idx}{Index of columns of A_2}
+\item{A2Idx}{Index of columns of A2}
 }
 \value{
 Returns a column partition lattice basis as matrix

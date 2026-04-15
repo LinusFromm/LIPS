@@ -12,15 +12,15 @@ extensionSampler(
   lambda = NULL,
   extension = "p",
   p = 0,
-  CPLBIdx = NULL,
+  A2Idx = NULL,
   a = NULL,
   b = 0,
-  ldelta = 0,
+  loggamma = 0,
   w = 0,
-  x.start = NULL,
-  n.sample = 1e+05,
-  n.burnin = 10000,
-  n.chains = 4,
+  xStart = NULL,
+  nSample = 1e+05,
+  nBurnin = 10000,
+  nChains = 4,
   thinning = 1
 )
 }
@@ -39,23 +39,23 @@ extensionSampler(
 
 \item{p}{Relaxation limit}
 
-\item{CPLBIdx}{Free variables correponding to matrix A_2}
+\item{A2Idx}{Free variables correponding to matrix A_2}
 
 \item{a}{"hyperrectangle" extension: bounds on hyperrectangle, "knapsack": objective function}
 
 \item{b}{Upper bound of objective function for knapsack extension}
 
-\item{ldelta}{Combined normalizing constant and delta}
+\item{loggamma}{Combined normalizing constant and delta}
 
 \item{w}{Weight put on "outsideness"}
 
-\item{x.start}{Starting points for each chain. Needs to be fed in as a matrix with number of rows = number of chains}
+\item{xStart}{Starting points for each chain. Needs to be fed in as a matrix with number of rows = number of chains}
 
-\item{n.sample}{Number of samples}
+\item{nSample}{Number of samples}
 
-\item{n.burnin}{Number of burnin steps}
+\item{nBurnin}{Number of burnin steps}
 
-\item{n.chains}{Number of chains}
+\item{nChains}{Number of chains}
 
 \item{thinning}{Thinning parameter}
 }

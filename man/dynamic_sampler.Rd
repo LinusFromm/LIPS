@@ -7,18 +7,18 @@
 dynamic_sampler(
   A = NULL,
   y = NULL,
-  dist = "Pois",
-  rate = NULL,
+  Model = "Pois",
+  lambda = NULL,
   Method = "MH",
   Proposal = "Unif",
   Reorder = TRUE,
-  x_order_init = NULL,
-  tune_par = 0.5,
+  xOrderInit = NULL,
+  tunePar = 0.5,
   B = NULL,
-  x_init = NULL,
-  nsample = 1e+05,
-  nburnin = 10000,
-  nchains = 4,
+  xInit = NULL,
+  nSample = 1e+05,
+  nBurnin = 10000,
+  nChains = 4,
   thinning = 1,
   combine = FALSE,
   verbose = FALSE
@@ -29,9 +29,9 @@ dynamic_sampler(
 
 \item{y}{Observation vector}
 
-\item{dist}{Distribution of the model ("Pois" - Poisson, "Unif" - Uniform), (Default = "Pois")}
+\item{Model}{Distribution of the model ("Pois" - Poisson, "Unif" - Uniform), (Default = "Pois")}
 
-\item{rate}{Poisson rate (if needed)}
+\item{lambda}{Poisson lambda (if needed)}
 
 \item{Method}{Sampling method ("MH" - Metropolis-Hasting, "Gibbs" - Gibbs sampling), (Default = "MH")}
 
@@ -39,28 +39,28 @@ dynamic_sampler(
 
 \item{Reorder}{Should the columns of A be reordered? (Default = TRUE)}
 
-\item{x_order_init}{If Reorder=FALSE, x_order can be used to reorder columns of A to match ordering of entries of x. Defaults to NULL when no such reordering is performed.}
+\item{xOrderInit}{If Reorder=FALSE, xOrder can be used to reorder columns of A to match ordering of entries of x. Defaults to NULL when no such reordering is performed.}
 
-\item{tune_par}{Tuning parameter for the dynamic Markov basis that controls variation of the fitness values for different CPLB (Default = 0.5)}
+\item{tunePar}{Tuning parameter for the dynamic Markov basis that controls variation of the fitness values for different CPLB (Default = 0.5)}
 
 \item{B}{Set of moves used to move in the fibre. If NULL use dynamic sampler if not NULL use regular sampler. (Default = NULL)}
 
-\item{x_init}{Initial state of the MCMC (not necessary, if nor provided algortihm will use lpSolve to find an initial solution)}
+\item{xInit}{Initial state of the MCMC (not necessary, if nor provided algortihm will use lpSolve to find an initial solution)}
 
-\item{nsample}{Number of samples per chain (Default = 100,000)}
+\item{nSample}{Number of samples per chain (Default = 100,000)}
 
-\item{nburnin}{Number of burnin samples in each chain (Default = 10,000)}
+\item{nBurnin}{Number of burnin samples in each chain (Default = 10,000)}
 
-\item{nchains}{Number of chains (Default = 4)}
+\item{nChains}{Number of chains (Default = 4)}
 
 \item{thinning}{Record only every kth sample where k is the value for thinning (Default = 1)}
 
 \item{combine}{Should extra moves be included combining lattice basis vectors? Defaults to FALSE, but should usually be set to TRUE if A is not unimodular.}
 
-\item{verbose}{Controls level of detail in recording lattice bases used. (Namely, if TRUE it records the x_order at every iteration)}
+\item{verbose}{Controls level of detail in recording lattice bases used. (Namely, if TRUE it records the xOrder at every iteration)}
 }
 \value{
-A list with components X (a matrix, each row corresponding to samplers for an entry of x) and x_order (a vector describing dynamic selection of lattice bases, if verbose=1).
+A list with components X (a matrix, each row corresponding to samplers for an entry of x) and xOrder (a vector describing dynamic selection of lattice bases, if verbose=1).
 }
 \description{
 Dynamic lattice basis sampler

@@ -9,7 +9,7 @@
 
 LIPS (Linear Inverse Problem Samplers) is a package created alongside my
 PhD thesis which is meant to implement all samplers created during my
-PhD. This includes different exension samplers and weighted move
+PhD. This includes different extension samplers and weighted move
 samplers.
 
 ## Installation
@@ -29,5 +29,4 @@ developed. So far the focus is on development rather than presentation.
 
 ``` r
 library(LIPS)
-## basic example code
 ```

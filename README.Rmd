@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-LIPS (Linear Inverse Problem Samplers) is a package created alongside my PhD thesis which is meant to implement all samplers created during my PhD. This includes different exension samplers and weighted move samplers.
+LIPS (Linear Inverse Problem Samplers) is a package created alongside my PhD thesis which is meant to implement all samplers created during my PhD. This includes different extension samplers and weighted move samplers.
 
 ## Installation
 
@@ -35,5 +35,5 @@ So far there are no examples they will be added as the package gets more develop
 
 ```{r example}
 library(LIPS)
-## basic example code
+
 ```

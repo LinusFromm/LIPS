@@ -15,6 +15,8 @@ weighted_move_sampler(
   n.chains = 4,
   thinning = 1,
   beta = 1,
+  beta1 = 2,
+  beta2 = 0.6,
   weights = NULL
 )
 }
@@ -38,6 +40,10 @@ weighted_move_sampler(
 \item{thinning}{Thinning parameter (store only every ith state)}
 
 \item{beta}{Tuning parameter determining how much heavier weights count towards sampling of moves}
+
+\item{beta1}{Tuning parameter for burnin}
+
+\item{beta2}{Tuning parameter for burnin}
 
 \item{weights}{Weights for the individual moves. If NULL uses uniform weights. (Default - NULL)}
 }

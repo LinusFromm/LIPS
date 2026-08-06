@@ -1,4 +1,4 @@
-#' Extension Samplers
+#' Linear inverse problem Samplers
 #' @param A Configuration Matrix
 #' @param y (Corrupted/aggregated) Observation Vector
 #' @param B Set of moves used (p-Markov, CPLB or Full Markov)
@@ -16,45 +16,67 @@
 #' @param nBurnin Number of burnin steps
 #' @param nChains Number of chains
 #' @param thinning Thinning parameter
+#' @param includeBurnin Should the output include the burn-in samples?
+#'
 #' @export
-extensionSampler <- function(A,
-                            y,
-                            B = NULL,
-                            Model = "uniform",
-                            lambda = NULL,
-                            extension = "p",
-                            p = 0,
-                            A2Idx = NULL,
-                            a = NULL,
-                            b = 0,
-                            loggamma = 0,
-                            w = 0,
-                            xStart = NULL,
-                            nSample = 1e+05,
-                            nBurnin = 1e+04,
-                            nChains = 4,
-                            thinning = 1){
+sampler <- function(A,
+                    y,
+                    B = NULL,
+                    Model = "uniform",
+                    lambda = NULL,
+                    extension = "none",
+                    p = 0,
+                    A2Idx = NULL,
+                    a = NULL,
+                    b = 0,
+                    loggamma = 0,
+                    w = 0,
+                    xStart = NULL,
+                    nSample = 1e+05,
+                    nBurnin = 1e+04,
+                    nChains = 4,
+                    thinning = 1,
+                    includeBurnin = FALSE){
 
   future::plan(future::multisession, workers = min(nChains, future::availableCores()))
 
-  if(extension == "p"){
-
+  if(extension == "none"){
     x = future.apply::future_lapply(1:nChains, function(chainID) {
-          pSampler(
-          A = A,
-          y = y,
-          B = B,
-          Model = Model,
-          lambda = lambda,
-          p = p,
-          loggamma = loggamma,
-          w = w,
-          nSample = nSample,
-          nBurnin = nBurnin,
-          chainID = chainID,
-          thinning = thinning
-        )
-      }, future.seed = TRUE, future.packages = "LIPS")
+      xSampler(
+        A = A,
+        y = y,
+        B = B,
+        Model = Model,
+        lambda = lambda,
+        xStart = xStart,
+        nSample = nSample,
+        nBurnin = nBurnin,
+        chainID = chainID,
+        thinning = thinning,
+        includeBurnin = includeBurnin
+      )
+    }, future.seed = TRUE, future.packages = "LIPS")
+  }
+
+  if(extension == "p"){
+    x = future.apply::future_lapply(1:nChains, function(chainID) {
+      pSampler(
+        A = A,
+        y = y,
+        B = B,
+        Model = Model,
+        lambda = lambda,
+        p = p,
+        loggamma = loggamma,
+        w = w,
+        xStart = xStart,
+        nSample = nSample,
+        nBurnin = nBurnin,
+        chainID = chainID,
+        thinning = thinning,
+        includeBurnin = includeBurnin
+      )
+    }, future.seed = TRUE, future.packages = "LIPS")
   } else if(extension == "hyperrectangle"){
     x = future.apply::future_lapply(1:nChains, function(chainID) {
       hyperrectangleSampler(A = A,
@@ -91,5 +113,5 @@ extensionSampler <- function(A,
                       thinning = thinning)
     }, future.seed = TRUE, future.packages = "LIPS")
   }
-  return(x)
+  return(do.call(rbind, x))
 }

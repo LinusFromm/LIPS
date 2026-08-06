@@ -9,6 +9,8 @@
 #' @param n.burnin Number of burnin steps
 #' @param thinning Thinning parameter (store only every ith state)
 #' @param beta Tuning parameter determining how much heavier weights count towards sampling of moves
+#' @param beta1 Tuning parameter for burnin
+#' @param beta2 Tuning parameter for burnin
 #' @param weights Weights for the individual moves. If NULL uses uniform weights. (Default - NULL)
 #'
 #' @return Returns a matrix of samples
@@ -23,6 +25,8 @@ weighted_move_sampler <- function(A,
                       n.chains = 4,
                       thinning = 1,
                       beta = 1,
+                      beta1 = 2,
+                      beta2 = 0.6,
                       weights = NULL){
   c = ncol(A)
   r = nrow(A)
@@ -34,8 +38,6 @@ weighted_move_sampler <- function(A,
 
   cat("Initializing chains... \n")
   x = matrix(0, nrow = n.chains*(n.sample/thinning), ncol = c+3)
-
-
 
   for(ii in 1:n.chains){
     x.current = lpSolve::lp("max",
@@ -65,10 +67,14 @@ weighted_move_sampler <- function(A,
         u = stats::runif(1, 0, 1)
 
         if(u < exp(alpha)){
+          weights[z.idx] = weights[z.idx]*beta1
           x.current = xmin + a*z
+        } else {
+          weights[z.idx] = weights[z.idx]*beta2
         }
       }
     }
+    cat("\n Weights: ", weights, "\n")
 
     move_indices = sample.int(m, n.sample, replace = TRUE, prob = weights^beta)
     for(iiii in 1:n.sample){

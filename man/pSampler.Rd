@@ -17,7 +17,8 @@ pSampler(
   nSample = 1e+05,
   nBurnin = 10000,
   chainID = 1,
-  thinning = 1
+  thinning = 1,
+  includeBurnin = FALSE
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ pSampler(
 \item{chainID}{Which number chain?}
 
 \item{thinning}{Thinning parameter}
+
+\item{includeBurnin}{Should the output include the burn-in samples?}
 }
 \description{
 p-samplers

@@ -5,38 +5,57 @@
 #' @param Model Unconditional distribution on x
 #' @param lambda Poisson rates for each x_i
 #' @param proposal Which proposal for moves? "Random" or "NonRandom", first will use the uniform distribution the latter a systematic approach.
+#' @param xStart Starting points for each chain. Needs to be fed in as a matrix with number of rows = number of chains
 #' @param nSample Number of samples that are produced
-#' @param nChains Number of chains the sample is produced from
+#' @param chainID Chain ID passed down from sampler.R
 #' @param nBurnin Number of burnin steps
 #' @param thinning Thinning parameter (store only every ith state)
+#' @param includeBurnin Should the output include the burn-in samples?
 #'
 #' @return Returns a matrix of samples
 #' @export
 xSampler <- function(A,
-                      y,
-                      B,
-                      Model = "Unif",
-                      lambda = NULL,
-                      proposal = "Random",
-                      nSample = 1e+05,
-                      nBurnin = 1e+04,
-                      nChains = 4,
-                      thinning = 1){
+                     y,
+                     B,
+                     Model = "uniform",
+                     lambda = NULL,
+                     proposal = "Random",
+                     xStart = NULL,
+                     nSample = 1e+05,
+                     nBurnin = 1e+04,
+                     chainID = 1,
+                     thinning = 1,
+                     includeBurnin = FALSE){
   c = ncol(A)
   r = nrow(A)
   d = c-r
   m = ncol(B)
 
-  cat("Initializing chains... \n")
-  x = matrix(0, nrow = nChains*(nSample/thinning), ncol = c+3)
+  if(includeBurnin){
+    x = matrix(NA, ncol = c+3, nrow = nSample/thinning+nBurnin/thinning)
+    x[, c+3] = (chainID-1)*((nSample + nBurnin)/thinning) + 1:((nSample + nBurnin)/thinning)
+    x[, c+2] = 1:((nSample + nBurnin)/thinning)
+    x[, c+1] = rep(chainID, (nSample + nBurnin)/thinning)
+  } else {
+    x = matrix(NA, ncol = c+3, nrow = nSample/thinning)
+    x[, c+3] = (chainID-1)*(nSample/thinning) + 1:(nSample/thinning)
+    x[, c+2] = 1:(nSample/thinning)
+    x[, c+1] = rep(chainID, nSample/thinning)
+  }
 
-  for(ii in 1:nChains){
-    xCurrent = lpSolve::lp("max",
-                            objective.in = sample(0:1, c, replace = TRUE),
-                            const.mat = A,
-                            const.dir = "==",
-                            const.rhs = y,
-                            all.int = TRUE)$solution
+  if(is.null(xStart)){
+    xStart = lpSolve::lp(direction = "min",
+                         objective.in = sample(0:1, c, replace = TRUE),
+                         const.mat = A,
+                         const.rhs = y,
+                         const.dir = "=",
+                         all.int = TRUE)$solution
+  }
+
+  xCurrent = xStart
+
+  if(nBurnin > 0){
+    temperature = seq(0,1,length.out = nBurnin)
 
     move_indices = c()
     if(proposal == "Random"){
@@ -44,66 +63,100 @@ xSampler <- function(A,
     } else if (proposal == "NonRandom"){
       move_indices = c(rep(1:m, floor(nBurnin/m)), 1:(nBurnin%%m))
     }
-    for(iii in 1:nBurnin){
-      z.idx = move_indices[iii]
-      z = B[,z.idx]
 
-      amax = floor(min((xCurrent/abs(z))[which(z<0)]))
-      amin = -floor(min((xCurrent/abs(z))[which(z>0)]))
+    if(includeBurnin){
+      for(iiii in 1:nBurnin){
+        z.idx = move_indices[iiii]
+        z = B[,z.idx]
 
-      # Try uniform first
-      xmin = xCurrent + amin*z
-      a = sample(0:(amax-amin), 1, replace = TRUE)
+        amax = floor(min((xCurrent/abs(z))[which(z<0)]))
+        amin = -floor(min((xCurrent/abs(z))[which(z>0)]))
 
-      # Here I need to also use the MH-acceptance ratio when implementing other distributions
-      if(Model == "Unif"){
-        xCurrent = xmin + a*z
-      } else if(Model == "Pois") {
-        alpha = sum(stats::dpois(xmin + a*z, lambda = lambda, log = TRUE) - stats::dpois(xCurrent, lambda = lambda, log = TRUE))
-        u = stats::runif(1, 0, 1)
+        # Try uniform first
+        xmin = xCurrent + amin*z
+        a = sample(0:(amax-amin), 1, replace = TRUE)
 
-        if(u < exp(alpha)){
+        # Here I need to also use the MH-acceptance ratio when implementing other distributions
+        if(Model == "uniform"){
           xCurrent = xmin + a*z
-        }
-      }
-    }
+        } else if(Model == "poisson") {
+          alpha = sum(stats::dpois(xmin + a*z, lambda = lambda, log = TRUE) - stats::dpois(xCurrent, lambda = lambda, log = TRUE))
+          u = stats::runif(1, 0, 1)
 
-    move_indices = c()
-    if(proposal == "Random"){
-      move_indices = sample.int(m, nSample, replace = TRUE)
-    } else if (proposal == "NonRandom"){
-      move_indices = c(rep(1:m, floor(nSample)/m), 1:(nSample%%m))
-    }
-    for(iiii in 1:nSample){
-      z.idx = move_indices[iiii]
-      z = B[,z.idx]
+          if(u < exp(alpha*temperature[iiii])){
+            xCurrent = xmin + a*z
+          }
 
-      amax = floor(min((xCurrent/abs(z))[which(z<0)]))
-      amin = -floor(min((xCurrent/abs(z))[which(z>0)]))
-
-      # Try uniform first
-      xmin = xCurrent + amin*z
-      a = sample(0:(amax-amin), 1, replace = TRUE)
-
-      ## Here I need to also use the MH-acceptance ratio when implementing other distributions
-      if(Model == "Unif"){
-        xCurrent = xmin + a*z
-      } else if(Model == "Pois") {
-        alpha = sum(stats::dpois(xmin + a*z, lambda = lambda, log = TRUE) - stats::dpois(xCurrent, lambda = lambda, log = TRUE))
-        u = stats::runif(1, 0, 1)
-
-        if(u < exp(alpha)){
-          xCurrent = xmin + a*z
+          if(iiii%%thinning == 0){
+            x[iiii/thinning, 1:c] <- xCurrent
+          }
         }
       }
 
-      if(iiii %% thinning == 0){
-        x[(ii-1)*(nSample/thinning) + iiii/thinning, 1:c] = xCurrent
-        x[(ii-1)*(nSample/thinning) + iiii/thinning, (c+1):(c+3)] = c(ii, iiii/thinning, (ii-1)*nSample/thinning + iiii/thinning)
+    } else {
+      for(iiii in 1:nBurnin){
+        z.idx = move_indices[iiii]
+        z = B[,z.idx]
+
+        amax = floor(min((xCurrent/abs(z))[which(z<0)]))
+        amin = -floor(min((xCurrent/abs(z))[which(z>0)]))
+
+        # Try uniform first
+        xmin = xCurrent + amin*z
+        a = sample(0:(amax-amin), 1, replace = TRUE)
+
+        # Here I need to also use the MH-acceptance ratio when implementing other distributions
+        if(Model == "uniform"){
+          xCurrent = xmin + a*z
+        } else if(Model == "poisson") {
+          alpha = sum(stats::dpois(xmin + a*z, lambda = lambda, log = TRUE) - stats::dpois(xCurrent, lambda = lambda, log = TRUE))
+          u = stats::runif(1, 0, 1)
+
+          if(u < exp(alpha*temperature[iiii])){
+            xCurrent = xmin + a*z
+          }
+        }
       }
     }
-    cat("Chain ", ii, " completed.\n")
   }
 
+  move_indices = c()
+  if(proposal == "Random"){
+    move_indices = sample.int(m, nSample, replace = TRUE)
+  } else if (proposal == "NonRandom"){
+    move_indices = c(rep(1:m, floor(nSample)/m), 1:(nSample%%m))
+  }
+
+  for(iiii in 1:nSample){
+    z.idx = move_indices[iiii]
+    z = B[,z.idx]
+
+    amax = floor(min((xCurrent/abs(z))[which(z<0)]))
+    amin = -floor(min((xCurrent/abs(z))[which(z>0)]))
+
+    # Try uniform first
+    xmin = xCurrent + amin*z
+    a = sample(0:(amax-amin), 1, replace = TRUE)
+
+    ## Here I need to also use the MH-acceptance ratio when implementing other distributions
+    if(Model == "uniform"){
+      xCurrent = xmin + a*z
+    } else if(Model == "poisson") {
+      alpha = sum(stats::dpois(xmin + a*z, lambda = lambda, log = TRUE) - stats::dpois(xCurrent, lambda = lambda, log = TRUE))
+      u = stats::runif(1, 0, 1)
+
+      if(u < exp(alpha)){
+        xCurrent = xmin + a*z
+      }
+    }
+
+    if(iiii %% thinning == 0){
+      if(includeBurnin){
+        x[nBurnin/thinning + iiii/thinning, 1:c] = xCurrent
+      } else {
+        x[iiii/thinning, 1:c] = xCurrent
+      }
+    }
+  }
   return(x)
 }

@@ -8,13 +8,15 @@ xSampler(
   A,
   y,
   B,
-  Model = "Unif",
+  Model = "uniform",
   lambda = NULL,
   proposal = "Random",
+  xStart = NULL,
   nSample = 1e+05,
   nBurnin = 10000,
-  nChains = 4,
-  thinning = 1
+  chainID = 1,
+  thinning = 1,
+  includeBurnin = FALSE
 )
 }
 \arguments{
@@ -30,13 +32,17 @@ xSampler(
 
 \item{proposal}{Which proposal for moves? "Random" or "NonRandom", first will use the uniform distribution the latter a systematic approach.}
 
+\item{xStart}{Starting points for each chain. Needs to be fed in as a matrix with number of rows = number of chains}
+
 \item{nSample}{Number of samples that are produced}
 
 \item{nBurnin}{Number of burnin steps}
 
-\item{nChains}{Number of chains the sample is produced from}
+\item{chainID}{Chain ID passed down from sampler.R}
 
 \item{thinning}{Thinning parameter (store only every ith state)}
+
+\item{includeBurnin}{Should the output include the burn-in samples?}
 }
 \value{
 Returns a matrix of samples

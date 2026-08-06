@@ -12,6 +12,7 @@
 #' @param nBurnin Number of burnin steps
 #' @param chainID Which number chain?
 #' @param thinning Thinning parameter
+#' @param includeBurnin Should the output include the burn-in samples?
 #'
 #' @export
 pSampler <- function(A,
@@ -26,7 +27,8 @@ pSampler <- function(A,
                      nSample = 1e+05,
                      nBurnin = 1e+04,
                      chainID = 1,
-                     thinning = 1){
+                     thinning = 1,
+                     includeBurnin = FALSE){
   r = nrow(A)
   c = ncol(A)
 
@@ -38,10 +40,17 @@ pSampler <- function(A,
     stop("thinning paramter must divide nSample parameter!")
   }
 
-  x = matrix(NA, ncol = c+3, nrow = nSample/thinning)
-  x[, c+3] = (chainID-1)*nSample + 1:(nSample/thinning)
-  x[, c+2] = 1:(nSample/thinning)
-  x[, c+1] = rep(chainID, nSample/thinning)
+  if(includeBurnin){
+    x = matrix(NA, ncol = c+3, nrow = nSample/thinning+nBurnin/thinning)
+    x[, c+3] = (chainID-1)*((nSample + nBurnin)/thinning) + 1:((nSample + nBurnin)/thinning)
+    x[, c+2] = 1:((nSample + nBurnin)/thinning)
+    x[, c+1] = rep(chainID, (nSample + nBurnin)/thinning)
+  } else {
+    x = matrix(NA, ncol = c+3, nrow = nSample/thinning)
+    x[, c+3] = (chainID-1)*(nSample/thinning) + 1:(nSample/thinning)
+    x[, c+2] = 1:(nSample/thinning)
+    x[, c+1] = rep(chainID, nSample/thinning)
+  }
 
   if(is.null(xStart)){
     xStart = lpSolve::lp(direction = "min",
@@ -54,14 +63,38 @@ pSampler <- function(A,
 
   xCurrent = xStart
 
-  moveIndices = sample(1:ncol(B), nBurnin, replace = TRUE)
-  for(iiii in 1:nBurnin){
-    moveIdx = moveIndices[iiii]
-    xProposal = proposePoint(xCurrent, moveIdx, B, extension = "p", p)
-    alpha = acceptanceExt(xCurrent, xProposal, loggamma, w, Model, lambda)
+  if(nBurnin > 0){
+    moveIndices = sample(1:ncol(B), nBurnin, replace = TRUE)
 
-    if(stats::runif(1) < exp(alpha)){
-      xCurrent = xProposal
+    if(includeBurnin){
+      temperature = seq(0, 1, length.out = nBurnin)
+
+      for(iiii in 1:nBurnin){
+        moveIdx = moveIndices[iiii]
+        xProposal = proposePoint(xCurrent, moveIdx, B, extension = "p", p)
+        alpha = acceptanceExt(xCurrent, xProposal, loggamma, w, Model, lambda)*temperature[iiii]
+
+        if(stats::runif(1) < exp(alpha)){
+          xCurrent = xProposal
+        }
+
+        if(iiii%%thinning == 0){
+          x[iiii/thinning, 1:c] <- xCurrent
+        }
+      }
+
+    } else {
+      temperature = seq(0,1,length.out = nBurnin)
+
+      for(iiii in 1:nBurnin){
+        moveIdx = moveIndices[iiii]
+        xProposal = proposePoint(xCurrent, moveIdx, B, extension = "p", p)
+        alpha = acceptanceExt(xCurrent, xProposal, loggamma, w, Model, lambda)*temperature[iiii]
+
+        if(stats::runif(1) < exp(alpha)){
+          xCurrent = xProposal
+        }
+      }
     }
   }
 
@@ -76,7 +109,11 @@ pSampler <- function(A,
     }
 
     if(iiiii%%thinning == 0){
-      x[iiiii/thinning, 1:c] = xCurrent
+      if(includeBurnin){
+        x[nBurnin/thinning + iiiii/thinning, 1:c] = xCurrent
+      } else {
+        x[iiiii/thinning, 1:c] = xCurrent
+      }
     }
   }
   return(x = x)
